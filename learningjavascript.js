@@ -1756,3 +1756,23 @@ console.log(new Intl.NumberFormat(navigator.language, percent).format(num2)); //
 console.log(new Intl.NumberFormat("en-US", currency).format(num2)); // €3,884,764.23
 console.log(new Intl.NumberFormat("de-DE", currency).format(num2)); // 3.884.764,23 €
 console.log(new Intl.NumberFormat(navigator.language, currency).format(num2)); // €3,884,764.23
+
+// setTimeout
+const ingredients = ["olives", "spinach"];
+const pizzaTimer = setTimeout(
+  (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2}`),
+  3000,
+  ...ingredients
+);
+
+if (ingredients.includes("spinach")) clearTimeout(pizzaTimer); // use clearTimeout to stop the timer
+
+// setInterval
+setInterval(function () {
+  const now = new Date();
+  console.log(`${now.getHours()}:${now.getMinutes()} ${now.getSeconds()}`);
+}, 1000);
+
+// DOM Manipulation
+
+// use document.getElementsByTagName to select all elements of the same type like button, nav, a, p, etc
