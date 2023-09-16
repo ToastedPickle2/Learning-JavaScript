@@ -1773,6 +1773,193 @@ setInterval(function () {
   console.log(`${now.getHours()}:${now.getMinutes()} ${now.getSeconds()}`);
 }, 1000);
 
-// DOM Manipulation
+// DOM Manipulation --------------------------------------------------------------------------
 
 // use document.getElementsByTagName to select all elements of the same type like button, nav, a, p, etc
+
+// prepend - adds the element as the first child
+const header = document.querySelector(".header");
+const message = document.createElement("div");
+header.prepend(message);
+
+// append - adds the element as the last child
+header.append(message);
+
+// cloneNode - creates a copy
+header.append(message.cloneNode(true));
+
+// before - will insert message before the header element as a sibling
+header.before(message);
+
+// after - will insert message after the header element as a sibling
+header.after(message);
+
+// delete() - delete elements
+message.remove();
+
+/* Styles */
+
+// getComputedStyle - get a style of an element when the style was created in a css file and not directly on javascript
+console.log(getComputedStyle(message).color);
+console.log(getComputedStyle(message).height);
+
+// To change the style of an element using getComputedStyle
+message.style.height =
+  Number.parseFloat(getComputedStyle(message).height, 10) + 40 + "px"; // have to use Number.parseFloat because the height is a string 100px so need to get the number from this
+
+// To change the style of styles created in the root of a css file
+document.documentElement.style.setProperty("--color-primary", "orangered");
+
+/* Attributes */
+
+const logo = document.querySelector(".nav__logo");
+
+// alt - get the alternative text if there is any
+console.log(logo.alt);
+logo.alt = "Beautiful minimalist logo";
+
+// src = get the source if it is an image or video
+console.log(logo.src);
+
+// className - get the className
+console.log(logo.className);
+
+// getAttribute -
+console.log(logo.designer); // undefined because it's not a standard property that's expected to be on <img> elements
+console.log(logo.getAttribute("designer"));
+console.log(logo.getAttribute("src"));
+
+// setAttribute
+logo.setAttribute("company"), "Bankist";
+
+// Data attributes - to get the data set defined in an html file
+// in the html file: data-version-number="3.0"
+console.log(logo.dataset.versionNumber); // 3.0
+
+// Classes
+logo.classList.add("c");
+logo.classList.remove("c");
+logo.classList.toggle("c");
+logo.classList.contains("c");
+
+// DON'T use this because it will override everything
+logo.className = "jonas";
+//
+
+// current scrollX / scrollY
+console.log("Current scroll (X/Y)", scrollX, scrollY);
+
+// Height / width viewport
+console.log(
+  "height/width viewport",
+  document.documentElement.clientHeight,
+  document.documentElement.clientWidth
+);
+
+// Scrolling - IMPORTANT add window.scrollX and window.scrollY so that it always scrolls to the correct position
+const s1coords = section1.getBoundingClientRect();
+
+window.scrollTo({
+  left: s1coords.left + window.scrollX,
+  top: s1coords.top + window.scrollY,
+  behavior: "smooth",
+});
+// simplified version of above
+section1.scrollIntoView({ behavior: "smooth" });
+
+// mouseenter eventListener
+const h1 = document.querySelector("h1");
+
+const alertH1 = function (e) {
+  alert("addEventListener: Great! You are reading the heading");
+
+  h1.removeEventListener("mouseenter", alertH1);
+};
+
+// different version of the alertH1 function
+h1.onmouseenter = function (e) {
+  alert("addEventListener: Great! You are reading the heading");
+};
+
+// Random color function
+const randomInt2 = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+
+const randomColor = () =>
+  `rgb(${randomInt2(0, 255)}, ${randomInt2(0, 255)}, ${randomInt2(0, 255)})`;
+
+console.log(randomColor());
+
+// stopPropagation - built-in function that stops what you do to a child element from also changing its parent element
+document.querySelector(".nav__link").addEventListener("click", function (e) {
+  this.style.backgroundColor = randomColor(); // When this is clicked, the background color of the parent also changes.
+
+  e.stopPropagation(); // This stops the background color of the parent element from changing.
+});
+
+document.querySelector(".nav__links").addEventListener("click", function (e) {
+  this.style.backgroundColor = randomColor();
+
+  e.stopPropagation();
+});
+
+/* Page Navigations */
+document.querySelectorAll(".nav__link").forEach(function (el) {
+  el.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const id = this.getAttribute("href");
+    document.querySelector(id).scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+/// Event delegation - Used to add events to a parent element instead of adding to every single element
+// 1. Add event listener to common parent element
+// 2. Determine what element originated the event
+
+document.querySelector(".nav__links").addEventListener("click", function (e) {
+  console.log(e.target);
+  e.preventDefault();
+
+  // Matching strategy
+  if (e.target.classList.contains("nav__link")) {
+    const id = e.target.getAttribute("href");
+    document.querySelector(id).scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+// Going downwards: child
+h1.querySelectorAll(".highlight");
+console.log(h1.childNodes); // outputs all of the elements that are in the h1 element
+console.log(h1.children); // outputs ONLY the child elements
+console.log(h1.firstElementChild); // outputs ONLY the FIRST child element
+
+// Going upwards: parents
+console.log(h1.parentNode);
+console.log(h1.parentElement);
+
+h1.closest(".header").style.background = "var(--gradient-secondary"; // applies style to h1's closest parent element that has the class .header
+
+// Going sideways: siblings
+console.log(h1.previousElementSibling);
+console.log(h1.nextElementSibling);
+
+console.log(h1.previousSibling);
+console.log(h1.nextSibling);
+
+// Intersection Observer API - The Intersection Observer API allows you to configure a callback that is called when either of these circumstances occur:
+//A target element intersects either the device's viewport or a specified element. That specified element is called the root element or root for the purposes of the Intersection Observer API.
+const obsCallback = function (entries, observer) {
+  entries.forEach((entry) => {
+    console.log(entry);
+  });
+};
+
+const obsOptions = {
+  root: null, // the root is the viewport because it is set to null
+  threshold: 0.1, // A threshold of 0.1 means that when 10% of the target is visible within the element specified by the root option, the callback is invoked.
+  rootMargin: "-90px", // Margin around the root. Can have values similar to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right, bottom, left). The values can be percentages. This set of values serves to grow or shrink each side of the root element's bounding box before computing intersections. Defaults to all zeros.
+};
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1);
