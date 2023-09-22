@@ -1963,3 +1963,83 @@ const obsOptions = {
 
 const observer = new IntersectionObserver(obsCallback, obsOptions);
 observer.observe(section1);
+
+// Lazy Loading Images
+// - have a lower res version of an image you're using and blur it
+// - then when you scroll to the image you display the high res image and unblur
+<img
+  src="img/digital-lazy.jpg"
+  data-src="img/digital.jpg"
+  alt="Computer"
+  class="features__img lazy-img"
+/>;
+
+const imgTargets = document.querySelectorAll("img[data-src");
+
+const loadImg = function (entries, observer) {
+  const [entry] = entries;
+  console.log(entry);
+
+  if (!entry.isIntersecting) return;
+
+  // Replace src with data-src
+  entry.target.src = entry.target.dataset.src;
+
+  // Remove blur filter only AFTER the new img has loaded
+  entry.target.addEventListener("load", function () {
+    entry.target.classList.remove("lazy-img");
+  });
+
+  observer.unobserve(entry.target);
+};
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: "-50px",
+});
+imgTargets.forEach((img) => imgObserver.observe(img));
+
+/* Slider Component */
+// Slider
+const slides = document.querySelectorAll(".slide");
+const btnLeft = document.querySelector(".slider__btn--left");
+const btnRight = document.querySelector(".slider__btn--right");
+const slider = document.querySelector(".slider");
+
+let curSlide = 0;
+const maxSlide = slides.length - 1;
+
+slider.style.transform = "scale(0.7)";
+slider.style.overflow = "visible";
+
+// Next slide
+const goToSlide = function (slide) {
+  slides.forEach(
+    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+  );
+};
+goToSlide(0);
+
+const nextSlide = function () {
+  if (curSlide === maxSlide) {
+    curSlide = 0;
+  } else {
+    curSlide++;
+  }
+
+  goToSlide(curSlide);
+};
+
+const prevSlide = function () {
+  if (curSlide === 0) {
+    curSlide = maxSlide;
+  } else {
+    curSlide--;
+  }
+  goToSlide(curSlide);
+};
+
+btnRight.addEventListener("click", nextSlide);
+
+btnLeft.addEventListener("click", prevSlide);
