@@ -2043,3 +2043,74 @@ const prevSlide = function () {
 btnRight.addEventListener("click", nextSlide);
 
 btnLeft.addEventListener("click", prevSlide);
+
+// DomContent loaded
+document.addEventListener("DOMContentLoaded", function (e) {
+  console.log("HTML parsed and DOM tree built!", e);
+});
+
+// Page fully loaded
+window.addEventListener("load", function (e) {
+  console.log("Page fully loaded", e);
+});
+
+// Adds pop up asking users if they want to continue reloading the page
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  console.log(e);
+  e.returnValue = "";
+});
+
+// Async Script Loading - the script is loaded at the same time that the html is parsed. Normally, the script would only be loaded once the html was fully parsed.
+// - scripts are fetched asynchronously and executed immediately
+// - usually the DOMContentLoaded event waits for all scripts to execute, except for async scripts. So, DOMContentLoaded does not wait for an async script
+// - Used for 3rd-party scripts where order doesn't matter
+
+// Defer Script Loading - the script is loaded asynchronously but the execution of the script is deferred until the end of the html parsing
+// - with defer, unlike with async, the html parsing is never interrupted
+// - DOMContentLoaded event fires after defer script is executed
+// - scripts are executed in order
+// - This is overall the est solution. Use for your own scripts and when order matters
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/* Object-Oriented Programming 
+- object-oriented programming is a programming paradigm based on the concept of objects
+- Objects may contain data (properties) and code (methods). By using objects, we can pack data and the corresponding behavior into one block
+- objects are self-contained pieces/blocks of code
+- objects are building blocks of applications, and interact with one another
+- interactions happen through a public interface (API): methods that the code outside of the object can access and use to communicate with the object
+4 Fundamental Principals of OBject Oriented Programming
+  1. Abstraction
+  - ignoring or hiding details that don't matter, allowing us to get an overview perspective of the thing we're implementing, instead of messing with details that don't really matter to our implementation
+  
+  2. Encapsulation
+  - keeping properties and methods private inside the class, so they re not accessible from outside the class. Some methods can be exposed as public interface (API)
+  - prevents external code from accidentally manipulating internal properties/state
+  - allows to change internal implementation without the risk of breaking external code
+
+  3. Inheritance
+  - makes all properties and methods of a certain class available to a child class, forming a hierarchical relationship between classes. This allows us to reuse common logic and to model real-world relationships
+
+  4. Polymorphism
+  - a child class can overwrite a method it inherited from a parent class
+*/
+
+// Classes - a class is like a blueprint which can be used to create new objects based on the rules described in the class
+// - all objects created through a class are called instances of that class
+// - of objects or instance can have different data but they all share the same functionality
+
+// Prototypes
+// - all objects are linked to a certain prototype object
+// - Prototypal Inheritance: the prototype contains methods(behavior) that are accessible to all objects linked to that prototype
+// - behavior is delegated to the linked prototype object
+
+// 3 Ways of implementing prototypal inheritance
+//  1. Constructor functions
+//    - technique to create objects from a function
+//    - this is how built-in objects like Arrays, Maps or Sets are actually implemented
+//  2. ES6 Classes
+//    - Modern alternative to constructor function syntax
+//    - 'Syntactic sugar': behind the scenes, ES6 classes work exactly like constructor functions
+//    - Es6 classes do NOT behave like classes in classical OOP
+//  3. Objects.create()
+//    - The easiest and most straightforward way of linking an object to a prototype object
