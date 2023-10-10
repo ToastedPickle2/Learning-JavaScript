@@ -217,11 +217,13 @@ class Car2 {
   accelerate() {
     this.speed += 10;
     console.log(`${this.make} is going at ${this.speed} km/h`);
+    return this;
   }
 
   brake() {
     this.speed -= 5;
     console.log(`${this.make} is going at ${this.speed} km/h`);
+    return this;
   }
 
   get speedUS() {
@@ -246,7 +248,8 @@ const Student = function (firstName, birthYear, course) {
   this.course = course;
 };
 
-Student.prototype = Object.create(Person.prototype);
+// Linking prototypes
+Student.prototype = Object.create(Person.prototype); // This allows the Student constructor to access all of the methods created for the Person constructor. IMPORTANT - this must come before any methods that are made for the Student constructor
 
 Student.prototype.introduce = function () {
   console.log(`My name is ${this.firstName} and I study ${this.course}`);
@@ -256,3 +259,204 @@ const mike = new Student("Mike", 2020, "Computer Science");
 console.log(mike);
 mike.introduce();
 mike.calcAge();
+
+Student.prototype.constructor = Student; // This is to set the constructor of Student.prototype back to Student since after doing this Student.prototype = Object.create(Person.prototype); the constructor was changed to Person
+console.dir(Student.prototype.constructor);
+console.log(mike.__proto__.__proto__);
+
+// Coding Challenge
+// - second version
+// class Ev extends Car2 {
+//   constructor(make, speed, charge) {
+//     super(make, speed);
+//     this.charge = charge;
+//   }
+
+//   chargeBattery(chargeTo) {
+//     chargeTo = this.charge;
+//     return console.log(this.charge);
+//   }
+
+//   accelerate() {
+//     this.speed += 20;
+//     this.charge -= 0.01;
+//     return console.log(
+//       `${this.make} going at ${this.speed} km/h, with a charge of ${
+//         this.charge * 100
+//       }%`
+//     );
+//   }
+// }
+// console.log(tesla.speed);
+// console.log(tesla.charge);
+// tesla.accelerate();
+// tesla.chargeBattery();
+// tesla.brake();
+// tesla.brake();
+// tesla.accelerate();
+
+const Ev = function (make, speed, charge) {
+  Car.call(this, make, speed);
+  this.charge = charge;
+};
+Ev.prototype = Object.create(Car2.prototype);
+
+Ev.prototype.chargeBattery = function (chargeTo) {
+  this.charge = chargeTo;
+};
+
+Ev.prototype.accelerate = function () {
+  this.speed += 20;
+  this.charge--;
+  return console.log(
+    `${this.make} going at ${this.speed} km/h, with a charge of ${this.charge}%`
+  );
+};
+
+const tesla = new Ev("Tesla", 120, 23);
+tesla.chargeBattery(90);
+console.log(tesla);
+tesla.accelerate();
+
+class StudentCl extends PersonCl {
+  constructor(fullName, birthYear, course) {
+    super(fullName, birthYear);
+    this.course = course;
+  }
+
+  introduce() {
+    console.log(`My name is ${this.fullName} and I study ${this.course}`);
+  }
+}
+
+const alex = new StudentCl("Alex Ochoa", 1999, "CS");
+console.log(alex.course);
+alex.introduce();
+alex.calcAge();
+
+const StudentProto = Object.create(PersonProto);
+StudentProto.init = function (firstName, birthYear, course) {
+  PersonProto.init.call(this, firstName, birthYear);
+  this.course = course;
+};
+
+StudentProto.introduce = function () {
+  console.log(`My name is ${this.fullName} and I study ${this.course}`);
+};
+
+const jay = Object.create(StudentProto);
+jay.init("Jay", 2010, "Computer Science");
+console.log(jay);
+jay.introduce();
+jay.calcAge(); // Important - jay has access to the StudentProto methods and the StudentProto has access to the PersonProto methods which is where this calcAge method comes from
+
+// 1. Public Fields
+// 2. Private Fields
+// 3. Public Methods
+// 4. Private Methods
+
+class Account {
+  // 1. Public fields (instances)
+  locale = navigator.language;
+
+  // 2. Private Fields (instances) - using #
+  #movements = [];
+  #pin;
+
+  constructor(owner, currency, pin) {
+    this.owner = owner;
+    this.currency = currency;
+    // Protected property - use underscore infront of any information or methods that are protected
+    this.#pin = pin;
+    // this._movements = [];
+    // this.locale = navigator.language;
+
+    console.log(`Thanks for opening an account, ${owner}`);
+  }
+
+  // 3. Public Methods
+
+  // Public interface
+  getMovements() {
+    return this.#movements;
+  }
+
+  deposit(val) {
+    this.#movements.push(val);
+    return this; // for chaining
+  }
+
+  withdraw(val) {
+    this.deposit(-val);
+    return this; // for chaining
+  }
+
+  requestLoan(val) {
+    if (this.#approveLoan(val)) {
+      this.deposit(val);
+      console.log(`Loan approved`);
+      return this; // for chaining
+    } else {
+      console.log("Loan denied");
+    }
+  }
+
+  static helper() {
+    // Static methods cannot be used by instances, only by the class itself
+    console.log("Helper");
+  }
+
+  // 4. Private Methods
+  #approveLoan(val) {
+    // use underscore infront of any information or methods that are protected
+    return true;
+  }
+}
+const acc1 = new Account("Jonas", "EUR", 1111);
+console.log(acc1);
+
+acc1.deposit(250);
+acc1.withdraw(150);
+acc1.requestLoan(1000);
+// acc1.#approveLoan(1000);
+console.log(acc1.getMovements());
+
+console.log(acc1);
+// console.log(acc1.#pin);  Uncaught SyntaxError: Private field '#pin' must be declared in an enclosing class (at oop.js:411:17)
+// console.log(acc1.#movements); Uncaught SyntaxError: Private field '#movements' must be declared in an enclosing class (at oop.js:411:17)
+
+Account.helper();
+
+// Chaining - for this to work, you need to return this; to each method that you're chaining
+acc1.deposit(300).deposit(500).withdraw(35).requestLoan(20000).withdraw(4000);
+console.log(acc1);
+
+// Coding Challenge
+class EVCl extends Car2 {
+  #charge;
+
+  constructor(make, speed, charge) {
+    super(make, speed, charge);
+    this.#charge = charge;
+  }
+
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    return this;
+  }
+
+  accelerate() {
+    this.speed += 20;
+    this.#charge--;
+    console.log(
+      `${this.make} going at ${this.speed} km/h, with a charge of ${
+        this.#charge
+      }%`
+    );
+    return this;
+  }
+}
+const rivian = new EVCl("Rivian", 120, 23);
+console.log(rivian);
+rivian.accelerate().brake().accelerate().chargeBattery(50).accelerate();
+console.log(rivian.charge);
